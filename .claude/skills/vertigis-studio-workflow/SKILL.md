@@ -26,8 +26,10 @@ All detail is in `references/`; this file is a router.
 | Structure, import failures, container/step/transition shape | `references/schema.md` |
 | Which activity to use + inputs/outputs | `references/activities.md` |
 | Expression write/fix | `references/expression-syntax.md` |
+| `position` values when generating or editing steps | `references/layout-positioning.md` |
 
-Most tasks need >1 file (new workflow needs all three). Read everything that applies first.
+Most tasks need >1 file (new workflow needs all three; generating/editing also needs
+`layout-positioning.md`). Read everything that applies first.
 
 ## Working with a workflow.json
 One loop covers analyze, edit, build. Skip what doesn't apply.
@@ -46,10 +48,12 @@ One loop covers analyze, edit, build. Skip what doesn't apply.
    `bun scripts/expression.ts "<code>"` (from the skill folder) and use its output.
 5. **Do the work.**
    - *Explain*: plain language (trigger, data flow, branching, forms). Not a JSON restatement.
-   - *Edit*: smallest correct change; keep ids; scan current max before adding.
+   - *Edit*: smallest correct change; keep ids; scan current max before adding. New/moved steps →
+     compute `position` per `references/layout-positioning.md`.
    - *Generate*: write full JSON to `workflow.json` in CWD. Never print JSON in chat. Follow
      `schema.md` generation rules (unique ids, real `position`, correct `name`/`accessors`/
-     `annotations`, no dangling transitions, no comments).
+     `annotations`, no dangling transitions, no comments) and `references/layout-positioning.md`
+     for every `position` value.
 6. **Final check.** Confirm all, then deliver: ☐ ids unique ☐ every step has real `position` ☐
    every block is a separate component with `branch` transition ☐ every action string exists &
    spelled right ☐ every expression references a real `name` with matching `accessors`/
@@ -60,6 +64,8 @@ One loop covers analyze, edit, build. Skip what doesn't apply.
 - `references/schema.md`: structure, step/transition + expression object shape, block-splitting, forms/events, generation rules.
 - `references/activities.md`: `gcx:wf:*` catalog (action strings, inputs/outputs). Not exhaustive—flag gaps.
 - `references/expression-syntax.md`: `=`, output/form refs, string building, escaping, client/server diffs.
+- `references/layout-positioning.md`: deterministic `position` rules (node size, Y-ranking, X-spine,
+  If-branch offsets) for generating or editing steps.
 - `scripts/expression.ts`: derive `code`/`source`/`accessors`/`annotations` for an expression
   instead of computing offsets by hand. `bun scripts/expression.ts "<code>"`.
 
