@@ -71,3 +71,34 @@ export function buildExpression(code: string): Expression {
         annotations: computeAnnotations(clean),
     };
 }
+
+// --- CLI (schema.md §3: nie von Hand zählen — hier ableiten lassen) --------
+
+const HELP = `Expression-Objekt (code/source/accessors/annotations) aus rohem JS-Code bauen.
+
+Usage:
+  bun scripts/expression.ts <code>
+  node scripts/expression.ts <code>
+
+<code> ist der rohe JS-Ausdruck fürs code/source-Feld (führendes '=' aus der
+Designer-Eingabe wird, falls vorhanden, automatisch entfernt).
+
+Beispiel:
+  bun scripts/expression.ts '$visibleLayers.length > 0 && $visibleLayers[0] === $map1.id'`;
+
+/** True when this file is the entry point, under either Bun or Node. */
+async function isMain(): Promise<boolean> {
+    const bunMain = (import.meta as { main?: boolean }).main;
+    if (typeof bunMain === "boolean") return bunMain;
+    const { pathToFileURL } = await import("node:url");
+    return import.meta.url === pathToFileURL(process.argv[1] ?? "").href;
+}
+
+if (await isMain()) {
+    const args = process.argv.slice(2);
+    if (args.length < 1 || args.includes("-h") || args.includes("--help")) {
+        console.log(HELP);
+        process.exit(args.length < 1 ? 1 : 0);
+    }
+    console.log(JSON.stringify(buildExpression(args[0]!), null, 2));
+}

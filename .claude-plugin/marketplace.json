@@ -1,0 +1,15 @@
+{
+  "name": "celestial-labs",
+  "description": "Skills for VertiGIS Studio and related GIS tooling",
+  "owner": {
+    "name": "celestial-labs",
+    "url": "https://github.com/celestial-labs"
+  },
+  "plugins": [
+    {
+      "name": "vertigis-studio-ai",
+      "source": "./",
+      "description": "VertiGIS Studio Workflow (Geocortex Workflow) JSON authoring, debugging and validation"
+    }
+  ]
+}

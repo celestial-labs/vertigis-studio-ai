@@ -1,0 +1,12 @@
+{
+  "name": "vertigis-studio-ai",
+  "description": "VertiGIS Studio Workflow (Geocortex Workflow) JSON authoring, debugging and validation",
+  "version": "0.1.0",
+  "author": {
+    "name": "celestial-labs"
+  },
+  "repository": "https://github.com/celestial-labs/vertigis-studio-workflow-skill",
+  "skills": [
+    "./.claude/skills/"
+  ]
+}

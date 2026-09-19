@@ -1,5 +1,5 @@
 {
-  "name": "vertigis-studio-workflow-skill",
+  "name": "vertigis-studio-ai",
   "private": true,
   "type": "module",
   "devDependencies": {

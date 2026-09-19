@@ -1,11 +1,11 @@
 ---
 name: vertigis-studio-workflow
-description: Analyze, edit, debug, validate, and generate VertiGIS Studio Workflow .json files (gcx:wf:* actions). Use for any workflow.json file, building/extending/fixing/explaining a VertiGIS Workflow (steps, transitions, forms, blocks like ForEach/Loop/TryCatch/Container/Subworkflow, ArcGIS actions, form events), gcx:wf:* action questions, expression write/fix, or import/runtime failures. Always consult this skill before any edit—small mistakes silently break the file.
+description: Analyze, explain, edit, debug, validate, and generate VertiGIS Studio Workflow files (also called Geocortex Workflow; gcx:wf:* actions) - any .json holding a VertiGIS workflow, whatever the filename. Covers steps, transitions, forms, blocks (ForEach/Loop/TryCatch/Container/Subworkflow), ArcGIS actions, form events, expressions, and import or silent runtime failures. Load it even when the .json is already attached or in context - gcx:wf:* semantics, block-splitting and branch rules are not derivable from the file alone, and reading it unaided yields confident wrong answers. Not for n8n workflows, GitHub Actions workflow.yml, CI pipelines, or unrelated JSON config.
 ---
 
 # VertiGIS Studio Workflow
 
-Read/edit/validate `.json` for the **VertiGIS Studio Workflow Designer** (`gcx:wf:*` actions).
+Read/edit/explain/validate `.json` for the **VertiGIS Studio Workflow Designer**.
 Strict, tool-specific JSON—small mistakes break import or fail silently (missing `position`,
 inline steps where a block needs its own component, missing `branch`, wrong action string).
 All detail is in `references/`; this file is a router.
@@ -41,7 +41,9 @@ One loop covers analyze, edit, build. Skip what doesn't apply.
    transitions. New → sketch flow first: steps, branches, which parts need their own component.
 3. **Read `references/activities.md`** per `action`. Unfamiliar → look up, don't guess. Missing →
    say so, don't invent an action string.
-4. **Read `references/expression-syntax.md`** for any expression (read or write).
+4. **Read `references/expression-syntax.md`** for any expression (read or write). Writing/editing
+   one → don't hand-derive `accessors`/`annotations`; run
+   `bun scripts/expression.ts "<code>"` (from the skill folder) and use its output.
 5. **Do the work.**
    - *Explain*: plain language (trigger, data flow, branching, forms). Not a JSON restatement.
    - *Edit*: smallest correct change; keep ids; scan current max before adding.
@@ -58,6 +60,8 @@ One loop covers analyze, edit, build. Skip what doesn't apply.
 - `references/schema.md`: structure, step/transition + expression object shape, block-splitting, forms/events, generation rules.
 - `references/activities.md`: `gcx:wf:*` catalog (action strings, inputs/outputs). Not exhaustive—flag gaps.
 - `references/expression-syntax.md`: `=`, output/form refs, string building, escaping, client/server diffs.
+- `scripts/expression.ts`: derive `code`/`source`/`accessors`/`annotations` for an expression
+  instead of computing offsets by hand. `bun scripts/expression.ts "<code>"`.
 
 ## Note
 "VertiGIS Workflow" includes **Geocortex Workflow** (former name). Same format, same concepts.

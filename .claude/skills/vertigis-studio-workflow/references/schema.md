@@ -5,7 +5,7 @@ Step/Transition-Form, Expression-Objekt, Block-Splitting, Formular/Event-Verdrah
 **Vollständig lesen vor Analyse/Erzeugung.**
 
 Nicht hier: Activity-Auswahl/Inputs/Outputs → `references/activities.md`; Expression-Inhalt
-(`code`) → `references/expression-syntax.md`; Strukturprüfung → `references/validation.md`.
+(`code`) → `references/expression-syntax.md`.
 
 ## 1. Top-Level-Struktur
 
@@ -89,7 +89,9 @@ Dynamisch (Expression-Objekt):
   `count` (Länge inkl. `$`), `kind` (`"idref"` für Step-Referenzen). `$$form` wird ebenfalls annotiert.
 - `values` (optional): Kontextwerte, z. B. `{ "id": 5 }` bei `resources.forms[values.id]`.
 - **Ableiten, nicht zählen:** `annotations` rein aus `source` + `accessors` berechnen (Offset/Länge
-  jedes `$name`-Vorkommens). Niemals von Hand zählen — Fehlerquelle. Generator/Validator sollten sie rechnen.
+  jedes `$name`-Vorkommens). Niemals von Hand zählen — Fehlerquelle. Stattdessen
+  `bun scripts/expression.ts "<code>"` (aus dem Skill-Ordner) ausführen — liefert das fertige
+  `{ code, source, accessors, annotations }`-Objekt zum Übernehmen.
 
 Mehrere Variablen (Reihenfolge links→rechts): `source` `$visibleLayers.length > 0 && $visibleLayers[0] === $map1.id`
 ```json
