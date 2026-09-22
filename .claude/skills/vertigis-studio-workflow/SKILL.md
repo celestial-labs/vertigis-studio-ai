@@ -14,22 +14,23 @@ All detail is in `references/`; this file is a router.
 
 ## When to Activate
 - A `.json` workflow is shared, referenced, or to be produced
-- Building/extending/fixing/explaining a VertiGIS Workflow
 - `gcx:wf:*` action question (which one, or its inputs/outputs)
 - Writing/reading/fixing an **expression** (`=$activityId.output`, strings, `undefined`)
 - Import or silent runtime failure
-- Any edit to an existing workflow JSON
 
-## Quick Reference
-| Task | Read |
-|---|---|
-| Structure, import failures, container/step/transition shape | `references/schema.md` |
-| Which activity to use + inputs/outputs | `references/activities.md` |
-| Expression write/fix | `references/expression-syntax.md` |
-| `position` values when generating or editing steps | `references/layout-positioning.md` |
+## Reference files
+| Read | For | Contains |
+|---|---|---|
+| `references/schema.md` | structure, import failures, container/step/transition shape | step/transition + expression object shape, block-splitting, forms/events, generation rules |
+| `references/activities.md` | which activity to use + inputs/outputs | `gcx:wf:*` catalog (action strings, I/O). Not exhaustive—flag gaps |
+| `references/expression-syntax.md` | expression write/fix | `=`, output/form refs, string building, escaping, client/server diffs |
+| `references/layout-positioning.md` | `position` values when generating or editing steps | deterministic position rules (node size, Y-ranking, X-spine, If-branch offsets) |
 
 Most tasks need >1 file (new workflow needs all three; generating/editing also needs
 `layout-positioning.md`). Read everything that applies first.
+
+`scripts/expression.ts`: derive `code`/`source`/`accessors`/`annotations` instead of hand-computing
+offsets — `bun scripts/expression.ts "<code>"` (used in step 4 below).
 
 ## Working with a workflow.json
 One loop covers analyze, edit, build. Skip what doesn't apply.
@@ -59,15 +60,6 @@ One loop covers analyze, edit, build. Skip what doesn't apply.
    spelled right ☐ every expression references a real `name` with matching `accessors`/
    `annotations`.
 7. **Hand back**: edited file in place, or new file saved + shared.
-
-## Reference files
-- `references/schema.md`: structure, step/transition + expression object shape, block-splitting, forms/events, generation rules.
-- `references/activities.md`: `gcx:wf:*` catalog (action strings, inputs/outputs). Not exhaustive—flag gaps.
-- `references/expression-syntax.md`: `=`, output/form refs, string building, escaping, client/server diffs.
-- `references/layout-positioning.md`: deterministic `position` rules (node size, Y-ranking, X-spine,
-  If-branch offsets) for generating or editing steps.
-- `scripts/expression.ts`: derive `code`/`source`/`accessors`/`annotations` for an expression
-  instead of computing offsets by hand. `bun scripts/expression.ts "<code>"`.
 
 ## Note
 "VertiGIS Workflow" includes **Geocortex Workflow** (former name). Same format, same concepts.
