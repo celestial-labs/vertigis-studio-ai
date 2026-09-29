@@ -1,0 +1,312 @@
+{
+    "_properties": {},
+    "components": [
+        {
+            "id": 2,
+            "steps": [
+                {
+                    "id": 3,
+                    "inputs": {},
+                    "position": "0,0",
+                    "purpose": "start",
+                    "title": "Start",
+                    "transitions": [
+                        {
+                            "id": 9,
+                            "inputs": {},
+                            "position": "90,60 90,110",
+                            "target": {
+                                "id": 7
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:forms:form:DisplayForm",
+                    "description": "Show the user's for their favorite color and prompt for more details.",
+                    "id": 4,
+                    "inputs": {
+                        "form": {
+                            "accessors": [],
+                            "code": "resources.forms[values.id]",
+                            "values": {
+                                "id": 5
+                            }
+                        }
+                    },
+                    "name": "form1",
+                    "position": "-30,270",
+                    "title": "Display Form",
+                    "transitions": [
+                        {
+                            "id": 20,
+                            "inputs": {},
+                            "position": "90,430 90,480",
+                            "target": {
+                                "id": 19
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:core::GetWorkflowInputs",
+                    "description": "Look up the values provided by the master workflow.",
+                    "id": 7,
+                    "inputs": {},
+                    "name": "getWorkflowInputs1",
+                    "position": "-30,110",
+                    "title": "Get Workflow Inputs",
+                    "transitions": [
+                        {
+                            "id": 43,
+                            "inputs": {},
+                            "position": "90,220 90,270",
+                            "target": {
+                                "id": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:core::SetWorkflowOutput",
+                    "id": 19,
+                    "inputs": {
+                        "name": "name",
+                        "value": {
+                            "accessors": [
+                                "$form1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 6,
+                                    "index": 0,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "$form1.state.nameTextBox.value",
+                            "source": "$form1.state.nameTextBox.value"
+                        }
+                    },
+                    "position": "-30,480",
+                    "title": "Set Workflow Output",
+                    "transitions": [
+                        {
+                            "id": 22,
+                            "inputs": {},
+                            "position": "90,510 90,560",
+                            "target": {
+                                "id": 21
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:core::SetWorkflowOutput",
+                    "id": 21,
+                    "inputs": {
+                        "name": "age",
+                        "value": {
+                            "accessors": [
+                                "$form1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 6,
+                                    "index": 0,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "$form1.state.ageNumber.value.numeric",
+                            "source": "$form1.state.ageNumber.value.numeric"
+                        }
+                    },
+                    "position": "-30,560",
+                    "title": "Set Workflow Output"
+                }
+            ]
+        },
+        {
+            "id": 46,
+            "steps": [
+                {
+                    "id": 47,
+                    "inputs": {},
+                    "position": "0,0",
+                    "purpose": "start",
+                    "title": "Event",
+                    "transitions": [
+                        {
+                            "id": 52,
+                            "inputs": {},
+                            "position": "90,60 90,110",
+                            "target": {
+                                "id": 51
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:forms::SetFormElementProperty",
+                    "description": "Populate the description of the text element with the values supplied by the master workflow.",
+                    "id": 51,
+                    "inputs": {
+                        "form": {
+                            "accessors": [
+                                "$$form"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 6,
+                                    "index": 0,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "$$form",
+                            "source": "$$form"
+                        },
+                        "propertyName": "description",
+                        "propertyValue": {
+                            "accessors": [
+                                "strings",
+                                "$getWorkflowInputs1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 7,
+                                    "index": 72,
+                                    "kind": "idref"
+                                },
+                                {
+                                    "count": 19,
+                                    "index": 112,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "\"This workflow has been called from another workflow. You said your \" + strings[\"favorite-color\"] + \" was **\" + $getWorkflowInputs1.inputs[\"colour\"] + \"**.\"",
+                            "source": "\"This workflow has been called from another workflow. You said your \" + strings[\"favorite-color\"] + \" was **\" + $getWorkflowInputs1.inputs[\"colour\"] + \"**.\""
+                        }
+                    },
+                    "position": "-30,110",
+                    "title": "Set Form Element Property"
+                }
+            ],
+            "title": "load-text1"
+        }
+    ],
+    "deploymentConfig": {
+        "supportedApps": {
+            "VSM": true,
+            "VSW": true
+        }
+    },
+    "designerVersion": "5.53.0+6",
+    "forms": [
+        {
+            "defaults": {},
+            "elements": {
+                "ageNumber": {
+                    "enabled": true,
+                    "format": {
+                        "lowerBound": 0,
+                        "precision": 0,
+                        "step": 1,
+                        "upperBound": 99
+                    },
+                    "index": 2,
+                    "require": true,
+                    "rowIndex": 0,
+                    "rowNumber": 2,
+                    "title": {
+                        "markdown": "Your Age"
+                    },
+                    "type": "Number",
+                    "value": "21"
+                },
+                "footer": {
+                    "enabled": true,
+                    "index": 3,
+                    "items": {
+                        "0": {
+                            "default": true,
+                            "index": 0,
+                            "label": "Submit",
+                            "validates": true,
+                            "value": "submit"
+                        },
+                        "1": {
+                            "index": 1,
+                            "label": "Cancel",
+                            "validates": false,
+                            "value": "cancel"
+                        }
+                    },
+                    "section": "footer",
+                    "type": "ButtonBar"
+                },
+                "header": {
+                    "section": "header",
+                    "title": {
+                        "markdown": "Target Workflow (Form 3 of 3)"
+                    },
+                    "type": "Header"
+                },
+                "nameTextBox": {
+                    "enabled": true,
+                    "index": 1,
+                    "require": true,
+                    "rowIndex": 0,
+                    "rowNumber": 1,
+                    "title": {
+                        "markdown": "Your Name"
+                    },
+                    "type": "TextBox",
+                    "value": "John"
+                },
+                "text1": {
+                    "description": {
+                        "markdown": "This text is replaced by the values supplied by the master workflow. Edit the load event on this element to see how that is done."
+                    },
+                    "enabled": true,
+                    "index": 0,
+                    "rowIndex": 0,
+                    "rowNumber": 0,
+                    "type": "Text"
+                }
+            },
+            "id": 5
+        }
+    ],
+    "licenseInfo": {
+        "licenseeId": ""
+    },
+    "start": {
+        "id": 3
+    },
+    "strings": {
+        "en-AU": {
+            "favorite-color": "favourite colour"
+        },
+        "en-CA": {
+            "favorite-color": "favourite colour"
+        },
+        "en-GB": {
+            "favorite-color": "favourite colour"
+        },
+        "inv": {
+            "favorite-color": "favorite color"
+        }
+    },
+    "transitions": [
+        {
+            "branch": "load$text1",
+            "id": 48,
+            "inputs": {},
+            "source": {
+                "id": 4
+            },
+            "target": {
+                "id": 47
+            }
+        }
+    ]
+}

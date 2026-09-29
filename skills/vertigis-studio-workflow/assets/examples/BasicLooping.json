@@ -1,0 +1,361 @@
+{
+    "_properties": {},
+    "components": [
+        {
+            "id": 2,
+            "steps": [
+                {
+                    "id": 3,
+                    "inputs": {},
+                    "position": "110,0",
+                    "purpose": "start",
+                    "title": "Start",
+                    "transitions": [
+                        {
+                            "id": 10,
+                            "inputs": {},
+                            "position": "200,60 200,175 180,175",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 9
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:core:loop:Loop",
+                    "id": 4,
+                    "inputs": {
+                        "count": 1,
+                        "exit": false,
+                        "limit": 3
+                    },
+                    "name": "loop1",
+                    "position": "-60,280",
+                    "title": "Basic Loop",
+                    "transitions": [
+                        {
+                            "id": 15,
+                            "inputs": {},
+                            "position": "60,400 60,450",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 14
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "description": "The basic loop below is configured to run a specific number of times (3) and displays information during each loop. Since no collection was input, no items will be displayed.",
+                    "id": 9,
+                    "inputs": {
+                        "text": "The basic loop below is configured to run a specific number of times (3) and displays information during each loop. Since no collection was input, no items will be displayed."
+                    },
+                    "position": "-60,100",
+                    "title": "Alert",
+                    "transitions": [
+                        {
+                            "id": 11,
+                            "inputs": {},
+                            "position": "60,230 60,280",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 4
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "description": "End of the first loop and check looping state.",
+                    "id": 14,
+                    "inputs": {
+                        "text": {
+                            "accessors": [
+                                "$loop1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 6,
+                                    "index": 50,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "\"First Loop Completed. Current looping state: \" + $loop1.looping",
+                            "source": "\"First Loop Completed. Current looping state: \" + $loop1.looping"
+                        }
+                    },
+                    "position": "-60,450",
+                    "title": "Alert",
+                    "transitions": [
+                        {
+                            "id": 18,
+                            "inputs": {},
+                            "position": "60,530 60,550 220,550 220,165 240,165",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 17
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:arcgis:query:QueryTask",
+                    "id": 16,
+                    "inputs": {
+                        "outFields": "*",
+                        "returnGeometry": {
+                            "accessors": [],
+                            "code": "false",
+                            "source": "false"
+                        },
+                        "url": "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3",
+                        "where": "OBJECTID <= 5"
+                    },
+                    "name": "query1",
+                    "position": "240,280",
+                    "title": "Query",
+                    "transitions": [
+                        {
+                            "id": 45,
+                            "inputs": {},
+                            "position": "360,340 360,390",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 39
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "description": "The next example For Each loop activity uses the results of a basic ArcGIS Query, then iterates through the items and displays a particular field within those items.",
+                    "id": 17,
+                    "inputs": {
+                        "text": "The next example Loop activity uses the results of a basic ArcGIS Query, then iterates through the items and displays a particular field within those items."
+                    },
+                    "position": "240,100",
+                    "title": "Alert",
+                    "transitions": [
+                        {
+                            "id": 19,
+                            "inputs": {},
+                            "position": "360,230 360,280",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 16
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "description": "End of the second loop and check looping state.",
+                    "id": 35,
+                    "inputs": {
+                        "text": {
+                            "accessors": [
+                                "$forEach1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 9,
+                                    "index": 51,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "\"Second Loop Completed. Current looping state: \" + $forEach1.looping",
+                            "source": "\"Second Loop Completed. Current looping state: \" + $forEach1.looping"
+                        }
+                    },
+                    "position": "240,560",
+                    "title": "Alert"
+                },
+                {
+                    "action": "gcx:wf:core:loop:ForEach",
+                    "id": 39,
+                    "inputs": {
+                        "items": {
+                            "accessors": [
+                                "$query1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 7,
+                                    "index": 0,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "$query1.features",
+                            "source": "$query1.features"
+                        }
+                    },
+                    "name": "forEach1",
+                    "position": "240,390",
+                    "title": "For Each",
+                    "transitions": [
+                        {
+                            "id": 46,
+                            "inputs": {},
+                            "position": "360,510 360,560",
+                            "sourceConnector": "bottom",
+                            "target": {
+                                "id": 35
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "steps": [
+                {
+                    "id": 6,
+                    "inputs": {},
+                    "position": "0,0",
+                    "purpose": "start",
+                    "title": "Loop",
+                    "transitions": [
+                        {
+                            "id": 13,
+                            "inputs": {},
+                            "position": "90,60 90,110",
+                            "target": {
+                                "id": 12
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "id": 12,
+                    "inputs": {
+                        "text": {
+                            "accessors": [
+                                "$loop1",
+                                "$loop1",
+                                "$loop1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 6,
+                                    "index": 16,
+                                    "kind": "idref"
+                                },
+                                {
+                                    "count": 6,
+                                    "index": 51,
+                                    "kind": "idref"
+                                },
+                                {
+                                    "count": 6,
+                                    "index": 87,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "\"Loop Pass: \" + $loop1.pass + \"\\nCurrent Item: \" + $loop1.item + \"\\nStill Looping: \" + $loop1.looping",
+                            "source": "\"Loop Pass: \" + $loop1.pass + \"\\nCurrent Item: \" + $loop1.item + \"\\nStill Looping: \" + $loop1.looping"
+                        }
+                    },
+                    "position": "-30,110",
+                    "title": "Alert"
+                }
+            ]
+        },
+        {
+            "id": 40,
+            "steps": [
+                {
+                    "id": 41,
+                    "inputs": {},
+                    "position": "0,0",
+                    "purpose": "start",
+                    "title": "For Each",
+                    "transitions": [
+                        {
+                            "id": 44,
+                            "inputs": {},
+                            "position": "90,60 90,110",
+                            "target": {
+                                "id": 43
+                            }
+                        }
+                    ]
+                },
+                {
+                    "action": "gcx:wf:ui::Alert",
+                    "id": 43,
+                    "inputs": {
+                        "text": {
+                            "accessors": [
+                                "$forEach1",
+                                "$forEach1",
+                                "$forEach1"
+                            ],
+                            "annotations": [
+                                {
+                                    "count": 9,
+                                    "index": 16,
+                                    "kind": "idref"
+                                },
+                                {
+                                    "count": 9,
+                                    "index": 59,
+                                    "kind": "idref"
+                                },
+                                {
+                                    "count": 9,
+                                    "index": 120,
+                                    "kind": "idref"
+                                }
+                            ],
+                            "code": "\"Loop Pass: \" + $forEach1.pass + \"\\nCurrent Item Name: \" + $forEach1.item.attributes.STATE_NAME + \"\\nStill Looping: \" + $forEach1.looping",
+                            "source": "\"Loop Pass: \" + $forEach1.pass + \"\\nCurrent Item Name: \" + $forEach1.item.attributes.STATE_NAME + \"\\nStill Looping: \" + $forEach1.looping"
+                        }
+                    },
+                    "position": "-30,110",
+                    "title": "Alert"
+                }
+            ]
+        }
+    ],
+    "deploymentConfig": {
+        "supportedApps": {
+            "VSM": true,
+            "VSW": true
+        }
+    },
+    "designerVersion": "5.53.0+6",
+    "licenseInfo": {
+        "licenseeId": "6186c77c-832c-031f-68e7-15ddb2c47678"
+    },
+    "start": {
+        "id": 3
+    },
+    "transitions": [
+        {
+            "branch": "loop",
+            "id": 7,
+            "inputs": {},
+            "source": {
+                "id": 4
+            },
+            "target": {
+                "id": 6
+            }
+        },
+        {
+            "branch": "loop",
+            "id": 42,
+            "inputs": {},
+            "source": {
+                "id": 39
+            },
+            "target": {
+                "id": 41
+            }
+        }
+    ]
+}

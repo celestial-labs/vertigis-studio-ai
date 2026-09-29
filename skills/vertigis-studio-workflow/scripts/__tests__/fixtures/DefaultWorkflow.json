@@ -1,0 +1,19 @@
+{
+    "components": [
+        {
+            "id": 1,
+            "steps": [
+                {
+                    "id": 2,
+                    "inputs": {},
+                    "position": "0,0",
+                    "purpose": "start",
+                    "title": "Start"
+                }
+            ]
+        }
+    ],
+    "start": {
+        "id": 2
+    }
+}

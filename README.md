@@ -14,13 +14,13 @@ Add this repository as a marketplace and install the plugin:
 
 ## Skills
 
-- **[vertigis-studio-workflow](.claude/skills/vertigis-studio-workflow/SKILL.md)** — analyze, explain,
+- **[vertigis-studio-workflow](skills/vertigis-studio-workflow/SKILL.md)** — analyze, explain,
   edit, debug, validate, and generate VertiGIS Studio Workflow JSON: steps, transitions, forms, blocks
   (ForEach/Loop/TryCatch/Container/Subworkflow), ArcGIS actions, form events, and expressions.
 
 ## Development
 
-Skill scripts (`.claude/skills/vertigis-studio-workflow/scripts/`) are TypeScript, run with
+Skill scripts (`skills/vertigis-studio-workflow/scripts/`) are TypeScript, run with
 [Bun](https://bun.sh) and type-checked with `tsc`:
 
 ```

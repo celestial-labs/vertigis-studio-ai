@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+
+description: vertigis-studio-workflow skill evals
+
+prompts:
+  - '{{prompt}}'
+
+providers:
+  - id: anthropic:claude-agent-sdk
+    label: with-plugin
+    config:
+      # Auth via local Claude Code login instead of ANTHROPIC_API_KEY
+      apiKeyRequired: false
+      model: claude-sonnet-5
+      # Agent's cwd for Read/Glob/Grep. Kept empty so it can't grep the skill
+      # source instead of invoking it. Does NOT affect plugin loading below.
+      working_dir: ./evals/workspace
+      # Loads the plugin (and its skills) from the repo root
+      plugins:
+        - type: local
+          path: .
+      skills: all
+      append_allowed_tools: [Read, Glob, Grep]
+      max_turns: 8
+
+defaultTest:
+  options:
+    # Grader for llm-rubric; defaults to OpenAI otherwise
+    provider:
+      id: anthropic:messages:claude-haiku-4-5
+      config:
+        apiKeyRequired: false
+
+tests: file://evals/tests.yaml

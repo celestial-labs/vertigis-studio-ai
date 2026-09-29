@@ -104,29 +104,65 @@ Mehrere Variablen (Reihenfolge links→rechts): `source` `$visibleLayers.length 
 ```
 (Korrigiert: `$map1` liegt bei Index 51, nicht 49.)
 
-## 4. Block-Aktivitäten (Container, Loop, ForEach, Subworkflow, TryCatch)
-**Kernregel:** Block-kapselnde Actions haben **niemals** verschachtelte `steps`/`transitions` im
-selben Step-Objekt. Jeder innere Block = **separate Komponente** im `components`-Array.
+## 4. Components
 
-1. **Kontroll-Schritt:** flach in `steps` der Elternkomponente; definiert Struktur
-   (`"action": "gcx:wf:core::TryCatch"`); kann per Transition mit Folge-Steps verbunden sein
-   (Austritt nach Block-Ende).
-2. **Innere Komponente:** eigenes `components`-Objekt mit eindeutiger `id`; `steps` beginnt mit
-   Start-Step (`purpose:"start"`, `title` = Blocktyp).
-3. **Globale Transition:** im top-level `transitions`; verknüpft Kontroll-Schritt (`source.id`) mit
-   Start-Step der inneren Komponente (`target.id`) und **muss** `branch` setzen.
-4. **Rückkehr:** endet die innere Komponente ohne ausgehende Transition, kehrt der Kontrollfluss
-   nach dem Block-Schritt in der Elternkomponente fort.
+A workflow is a set of **components**. Each entry in `components` is one flow graph:
+`{ "id", "title"?, "steps": [...] }`. The **main component** contains the step referenced by `start.id`.
+Every other component is a **child component** owned by one step (the Designer UI calls it a "subworkflow").
 
-| Aktivität | Action | Start-Titel innen | `branch` |
+### Activities that own child components
+| Activity | `action` | Child components | `branch` |
 |---|---|---|---|
-| Container | `gcx:wf:core::Container` | `"Container"` | `"content"` |
-| Subworkflow/Funktion | `gcx:wf:core::Subworkflow` | `"Function"` | `"content"` |
-| For Each | `gcx:wf:core:loop:ForEach` | `"For Each"` | `"loop"` |
-| Loop | `gcx:wf:core:loop:Loop` | `"Loop"` | `"loop"` |
-| Try Catch | `gcx:wf:core::TryCatch` | `"Try"` / `"Catch"` | `"try"` / `"catch"` |
+| Container | `gcx:wf:core::Container` | 1 | `content` |
+| Function | `gcx:wf:core::Subworkflow` | 1 | `content` |
+| For Each | `gcx:wf:core:loop:ForEach` | 1 | `loop` |
+| Loop | `gcx:wf:core:loop:Loop` | 1 | `loop` |
+| Try Catch | `gcx:wf:core::TryCatch` | 2 | `try`, `catch` |
+| Display Form | `gcx:wf:forms:form:DisplayForm` | 0..n, one per wired form event | `<eventName>$<elementName>` (→ §5) |
 
-Beispiel (Main mit ForEach + TryCatch; Loop/Subworkflow analog):
+### Wiring
+1. The owner step sits flat in its component's `steps`. A step never contains `steps`.
+2. Each child component is its own `components` entry with a unique `id` and exactly one start step
+   (`purpose: "start"`, `position: "0,0"` — coordinates are per component).
+3. Owner and child are linked by a **top-level** `transitions` entry:
+   `{ "id", "branch", "source": { "id": <owner step> }, "target": { "id": <child start step> } }`.
+   `branch` must match the table exactly, otherwise the runtime never enters the child component.
+   Transitions within one component stay in the source step's `transitions` (only `target`).
+4. Child components can own further child components (same pattern, any depth).
+
+### Execution
+- The owner step runs its child component. When the child has no more transitions, control returns to the
+  owner step, which decides what's next: another pass (Loop/ForEach), `catch` (TryCatch), or its own
+  outgoing transitions.
+- Scope is shared: steps inside see every outer `$name`, and outputs produced inside remain readable after
+  the owner step (loops: value of the last pass). Exception: form-event components get their own scope
+  (outer names visible inside, not the other way round).
+- `Exit` inside any component ends the whole workflow. There is no break/continue.
+
+### Identifiers
+- `id` is one namespace across components, steps, transitions and forms. A duplicate is silently
+  re-numbered on import, which breaks the transitions pointing to it.
+- A step `name` must be unique across the whole file, all components included. On a duplicate the earlier
+  step silently loses its name and every `$name` reference to it breaks.
+
+### Per-activity essentials
+`<name>` = the `name` of the owner step.
+- **For Each**: `$<name>.item`, `$<name>.pass` (0-based), `$<name>.count`, `$<name>.key` (only when
+  `items` is an object). **Loop**: `$<name>.pass` only. There is no `index` — a habit from JS
+  `array.forEach((item, index) => …)`; the Designer does not flag it and it is `undefined` at runtime.
+- **Loop** runs 0 times unless `count` or `exit` is set.
+- **Try Catch**: the error is `$<name>.error` inside `catch`. Without a `catch` component the error is
+  swallowed silently.
+- **Function**: needs input `subworkflow` = expression `$$subworkflow` (otherwise `arguments` is empty
+  and `setResult` does nothing). The Function step has no incoming or outgoing transitions; it is called
+  by Execute Function (`gcx:wf:core:subworkflow:RunSubworkflow`) with `subworkflowId: "<name>"`.
+  Return a value with `$<name>.setResult(value)`; the caller reads `$<executeFunctionName>.result`.
+
+### Editing
+Deleting an owner step means deleting its child components (recursively) and their top-level transitions
+too — otherwise orphaned components remain in the file.
+
+### Example (main component with For Each + Try Catch)
 ```json
 {
   "components": [
@@ -146,26 +182,26 @@ Beispiel (Main mit ForEach + TryCatch; Loop/Subworkflow analog):
     },
     {
       "id": 5, "steps": [
-        { "id": 6, "purpose": "start", "title": "For Each",
+        { "id": 6, "purpose": "start", "title": "For Each", "position": "0,0",
           "transitions": [ { "id": 16, "target": { "id": 15 } } ] },
-        { "id": 15, "action": "gcx:wf:core::Log", "title": "Log",
+        { "id": 15, "action": "gcx:wf:core::Log", "title": "Log", "position": "-30,110",
           "inputs": { "message": { "code": "$forEach1.item", "source": "$forEach1.item",
             "accessors": ["$forEach1"], "annotations": [ { "index": 0, "count": 9, "kind": "idref" } ] } } }
       ]
     },
     {
       "id": 38, "steps": [
-        { "id": 39, "purpose": "start", "title": "Try",
+        { "id": 39, "purpose": "start", "title": "Try", "position": "0,0",
           "transitions": [ { "id": 46, "target": { "id": 45 } } ] },
-        { "id": 45, "action": "gcx:wf:core::Throw", "title": "Throw",
+        { "id": 45, "action": "gcx:wf:core::Throw", "title": "Throw", "position": "-30,110",
           "inputs": { "message": "Fatal Error", "code": { "code": "\"100\"", "source": "\"100\"" } } }
       ]
     },
     {
       "id": 41, "steps": [
-        { "id": 42, "purpose": "start", "title": "Catch",
+        { "id": 42, "purpose": "start", "title": "Catch", "position": "0,0",
           "transitions": [ { "id": 48, "target": { "id": 47 } } ] },
-        { "id": 47, "action": "gcx:wf:core::Log", "title": "Log", "inputs": { "message": "Handle Error" } }
+        { "id": 47, "action": "gcx:wf:core::Log", "title": "Log", "position": "-30,110", "inputs": { "message": "Handle Error" } }
       ]
     }
   ],
@@ -177,10 +213,6 @@ Beispiel (Main mit ForEach + TryCatch; Loop/Subworkflow analog):
   ]
 }
 ```
-Hinweise: ForEach-Element `$forEach1.item` / `$forEach1.index`; Loop `$loop1.index` / `$loop1.pass`;
-Subworkflow-Definition (`gcx:wf:core::Subworkflow`, `branch:"content"`, Titel `"Function"`) wird per
-`gcx:wf:core:subworkflow:RunSubworkflow` (`subworkflowId`) aufgerufen; Rückgabe im Subworkflow via
-`$function1.setResult(...)`, Argument via `$function1.arguments`.
 
 ## 5. Formulare und Event-Handling
 Anzeige per `Display Form` (`gcx:wf:forms:form:DisplayForm`); Layouts im globalen `forms`-Array.

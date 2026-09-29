@@ -9,6 +9,6 @@
   },
   "repository": "https://github.com/celestial-labs/vertigis-studio-workflow-skill",
   "skills": [
-    "./.claude/skills/"
+    "./skills/"
   ]
 }
